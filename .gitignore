@@ -5,7 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+# Ruby extensions
+*.rbc
 # Distribution / packaging
 .Python
 build/
