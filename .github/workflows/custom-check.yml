@@ -1,0 +1,17 @@
+name: Custom Check
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - "./ruby/**"
+      - "./bash/**"
+
+jobs:
+  custom-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run Custom Script
+      run: ./scripts/custom-check.sh

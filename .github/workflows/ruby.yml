@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - "ruby/**" # Only trigger for changes in this directory
+      - "./ruby/**" # Only trigger for changes in this directory
   pull_request:
     branches: [ "master" ]
     paths:
-      - "ruby/**" # Only trigger for changes in this directory
+      - "./ruby/**" # Only trigger for changes in this directory
 
 permissions:
   contents: read

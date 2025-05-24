@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - "bash/**"
+      - "./bash/**"
   pull_request:
     branches: [ "master" ]
     paths:
-      - "bash/**"
+      - "./bash/**"
 
 jobs:
   lint:
