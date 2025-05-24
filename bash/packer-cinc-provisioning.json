@@ -1,0 +1,38 @@
+{
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "region": "us-east-1",
+        "source_ami_filter": {
+          "filters": {
+            "virtualization-type": "hvm",
+            "name": "amzn2-ami-hvm-*-x86_64-gp2",
+            "root-device-type": "ebs"
+          },
+          "owners": ["137112412989"],
+          "most_recent": true
+        },
+        "instance_type": "t2.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "cloud-automation-ami-{{timestamp}}"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "inline": [
+          "sudo yum update -y",
+          "curl -L https://omnitruck.chef.io/install.sh | sudo bash",
+          "sudo chef-client --version"
+        ]
+      },
+      {
+        "type": "shell",
+        "script": "scripts/install_cinc.sh"
+      },
+      {
+        "type": "shell",
+        "script": "scripts/apply_policies.sh"
+      }
+    ]
+  }
