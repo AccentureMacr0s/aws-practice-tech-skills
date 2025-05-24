@@ -1,0 +1,30 @@
+name: Python
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - "python/**"
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - "python/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Install Dependencies
+      run: pip install -r requirements.txt
+    - name: Run Tests
+      run: pytest
+    - name: Run Linter
+      run: flake8 python/
+    - name: Run Type Checker
+      run: mypy python/

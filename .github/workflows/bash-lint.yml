@@ -1,0 +1,22 @@
+name: Bash Lint
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - "bash/**"
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - "bash/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install ShellCheck
+      run: sudo apt-get install -y shellcheck
+    - name: Run ShellCheck
+      run: shellcheck bash/**/*.sh

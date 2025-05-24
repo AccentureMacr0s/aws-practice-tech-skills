@@ -1,0 +1,26 @@
+name: Lint
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - "**"
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - "**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+    - name: Install RuboCop
+      run: gem install rubocop
+    - name: Run RuboCop
+      run: rubocop ruby/

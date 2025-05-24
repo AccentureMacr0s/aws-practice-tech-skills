@@ -1,0 +1,27 @@
+name: Dependency Update
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # Runs every Monday at midnight
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+    - name: Install Dependencies
+      run: bundle install
+    - name: Update Dependencies
+      run: bundle update
+    - name: Commit and Push Changes
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add Gemfile.lock
+        git commit -m "Update dependencies"
+        git push origin master
