@@ -1,27 +1,33 @@
-name: Dependency Update
+name: CI/CD with Docker and Ruby
 
 on:
-  schedule:
-    - cron: "0 0 * * 1" # Runs every Monday at midnight
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  update-dependencies:
+  ruby-tests:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Ruby
-      uses: ./ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.0'
-    - name: Install Dependencies
-      run: bundle install
-    - name: Update Dependencies
-      run: bundle update
-    - name: Commit and Push Changes
+    # Шаг 1: Клонирование репозитория
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Шаг 2: Сборка Docker-образа
+    - name: Build Docker Image
+      run: docker build -t my-docker-image .
+
+    # Шаг 3: Запуск Ruby-тестов в Docker
+    - name: Run Ruby Tests in Docker
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        git add Gemfile.lock
-        git commit -m "Update dependencies"
-        git push origin master
+        docker run --name ruby-tests-container my-docker-image \
+        bash -c "bundle install && bundle exec rspec"
+
+    # Шаг 4: Удаление контейнера
+    - name: Cleanup Docker Container
+      if: always()
+      run: docker rm -f ruby-tests-container
