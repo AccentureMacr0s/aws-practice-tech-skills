@@ -20,7 +20,7 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0'
-    - name: Install RuboCop
-      run: gem install rubocop
+        working-directory: ruby
+        bundler-cache: true
     - name: Run RuboCop
-      run: rubocop ruby/
+      run: cd ruby && bundle exec rubocop .
