@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     git \
     vim \
     build-essential \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Bundler уже установлен в образе ruby
