@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y \
     ruby-full \
     ruby-bundler \
+    ruby-dev \
     && rm -rf /var/lib/apt/lists/* \
     && ruby --version
 # Bundler уже установлен в образе ruby
