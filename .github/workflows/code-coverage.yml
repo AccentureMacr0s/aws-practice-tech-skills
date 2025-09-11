@@ -16,9 +16,13 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0'
+        bundler-cache: true
+        working-directory: ruby
     - name: Install Dependencies
+      working-directory: ruby
       run: bundle install
     - name: Run Tests with Coverage
+      working-directory: ruby
       run: bundle exec rake test
     - name: Upload Coverage to Codecov
       uses: codecov/codecov-action@v3

@@ -1,0 +1,18 @@
+# frozen_string_literal: true
+
+require 'rake'
+
+desc 'Run all Ruby files to check for syntax errors'
+task :test do
+  ruby_files = Dir.glob('**/*.rb')
+  
+  ruby_files.each do |file|
+    puts "Checking #{file}..."
+    system("ruby -c #{file}")
+    exit 1 unless $?.success?
+  end
+  
+  puts 'All Ruby files have valid syntax!'
+end
+
+task default: :test

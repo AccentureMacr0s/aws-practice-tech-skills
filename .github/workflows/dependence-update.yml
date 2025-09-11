@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - master
   pull_request:
     branches:
       - main
+      - master
 
 jobs:
   ruby-tests:
@@ -25,7 +27,7 @@ jobs:
     - name: Run Ruby Tests in Docker
       run: |
         docker run --name ruby-tests-container my-docker-image \
-        bash -c "bundle install && bundle exec rspec"
+        bash -c "cd /app/ruby && bundle exec rake"
 
     # Шаг 4: Удаление контейнера
     - name: Cleanup Docker Container

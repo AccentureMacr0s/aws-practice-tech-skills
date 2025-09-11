@@ -7,6 +7,12 @@ __pycache__/
 *.so
 # Ruby extensions
 *.rbc
+
+# Ruby bundler
+.bundle/
+vendor/bundle/
+Gemfile.lock
+
 # Distribution / packaging
 .Python
 build/
