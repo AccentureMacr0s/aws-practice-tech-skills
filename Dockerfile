@@ -1,15 +1,14 @@
-FROM ubuntu:20.04
+FROM ruby:3.2-slim
 
 # Установка базовых зависимостей
 RUN apt-get update && apt-get install -y \
     curl \
     git \
     vim \
-    ruby-full \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Установка Bundler
-RUN gem install bundler
+# Bundler уже установлен в образе ruby
 
 # Установка рабочего каталога
 WORKDIR /app
