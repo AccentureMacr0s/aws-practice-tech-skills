@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <appSettings>
+    <!-- EBL Application Configuration -->
+    <add key="ApplicationPath" value="<%= @application_path %>" />
+    <add key="ServiceName" value="EBLService" />
+    <add key="Environment" value="Production" />
+    
+    <!-- Database Configuration -->
+    <add key="DatabaseConnectionString" value="Data Source=db-server;<%= @ad_domain %>;Initial Catalog=EBL_DB;Integrated Security=True;Encrypt=True;TrustServerCertificate=False;" />
+    
+    <!-- Active Directory Configuration -->
+    <add key="ADDomain" value="<%= @ad_domain %>" />
+    <add key="ADServer" value="dc.<%= @ad_domain %>" />
+    <add key="EnableADAuthentication" value="true" />
+    
+    <!-- SSL/TLS Configuration -->
+    <add key="EnableSSL" value="true" />
+    <add key="CertificateThumbprint" value="" />
+    <add key="MinTLSVersion" value="1.2" />
+    
+    <!-- Logging Configuration -->
+    <add key="LogLevel" value="INFO" />
+    <add key="LogPath" value="C:\Logs\EBL" />
+    <add key="MaxLogFileSize" value="100MB" />
+    <add key="MaxLogFiles" value="10" />
+    
+    <!-- Network Configuration -->
+    <add key="HTTPPort" value="8080" />
+    <add key="HTTPSPort" value="8443" />
+    <add key="ManagementPort" value="9090" />
+    
+    <!-- Security Configuration -->
+    <add key="EnableAuditLogging" value="true" />
+    <add key="SessionTimeout" value="30" />
+    <add key="MaxFailedLogins" value="5" />
+  </appSettings>
+  
+  <system.web>
+    <authentication mode="Windows" />
+    <authorization>
+      <allow roles="<%= @ad_domain %>\Bank Admins" />
+      <allow roles="<%= @ad_domain %>\EBL Operators" />
+      <deny users="*" />
+    </authorization>
+    <compilation targetFramework="4.8" />
+    <httpRuntime targetFramework="4.8" maxRequestLength="51200" />
+  </system.web>
+  
+  <system.serviceModel>
+    <behaviors>
+      <serviceBehaviors>
+        <behavior name="EBLServiceBehavior">
+          <serviceMetadata httpGetEnabled="true" httpsGetEnabled="true" />
+          <serviceDebug includeExceptionDetailInFaults="false" />
+          <serviceCredentials>
+            <windowsAuthentication allowAnonymousLogons="false" />
+          </serviceCredentials>
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+  </system.serviceModel>
+  
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="System.Security.Cryptography.Algorithms" />
+        <bindingRedirect oldVersion="0.0.0.0-4.3.1.0" newVersion="4.3.1.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+</configuration>

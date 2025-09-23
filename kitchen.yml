@@ -1,0 +1,80 @@
+---
+driver:
+  name: ec2
+  region: us-east-1
+  instance_type: t3.medium
+  security_group_ids: ["sg-xxxxxxxxx"]  # Replace with actual security group
+  subnet_id: subnet-xxxxxxxxx           # Replace with actual subnet
+  associate_public_ip: true
+  interface: winrm
+  user_data: |
+    <powershell>
+    # Enable WinRM for Test Kitchen
+    winrm quickconfig -q
+    winrm set winrm/config/service/auth '@{Basic="true"}'
+    winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+    winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
+    # Set Administrator password
+    net user Administrator "Ch3f@dmin123!"
+    wmic useraccount where "name='Administrator'" set PasswordExpires=FALSE
+    # Enable Administrator account
+    net user Administrator /active:yes
+    </powershell>
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  chef_license: accept
+  deprecations_as_errors: true
+  multiple_converge: 2
+  enforce_idempotency: true
+
+platforms:
+  - name: windows-2022
+    driver:
+      image_search:
+        owner-id: "801119661308"  # AWS Windows AMI owner
+        name: "Windows_Server-2022-English-Full-Base-*"
+      instance_type: t3.medium
+    transport:
+      name: winrm
+      username: Administrator
+      password: "Ch3f@dmin123!"
+      connection_timeout: 600
+      connection_retries: 10
+
+suites:
+  - name: default
+    run_list:
+      - recipe[ebl-server::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      ebl_server:
+        application_path: "C:\\Program Files\\EBL"
+        service_name: "EBLService"
+        ad_domain: "bank.local"
+        admin_group: "Bank Admins"
+        secrets_manager:
+          region: "us-east-1"
+          cert_secret_name: "ebl-server/certificates"
+          ad_secret_name: "ebl-server/ad-credentials"
+
+  - name: ad-integration
+    run_list:
+      - recipe[ebl-server::ad_join]
+      - recipe[ebl-server::default]
+    verifier:
+      inspec_tests:
+        - test/integration/ad-integration
+    attributes:
+      ebl_server:
+        application_path: "C:\\Program Files\\EBL"
+        service_name: "EBLService"
+        ad_domain: "bank.local"
+        admin_group: "Bank Admins"
+        secrets_manager:
+          region: "us-east-1"
+          cert_secret_name: "ebl-server/certificates"
+          ad_secret_name: "ebl-server/ad-credentials"

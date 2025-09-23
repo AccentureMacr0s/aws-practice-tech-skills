@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <section name="ldapSettings" type="System.Configuration.NameValueSectionHandler" />
+  </configSections>
+  
+  <ldapSettings>
+    <!-- LDAP Server Configuration -->
+    <add key="LdapServer" value="ldaps://dc.<%= @domain %>:636" />
+    <add key="LdapBaseDN" value="DC=<%= @domain.split('.').join(',DC=') %>" />
+    <add key="LdapBindDN" value="CN=EBL Service,OU=Service Accounts,DC=<%= @domain.split('.').join(',DC=') %>" />
+    
+    <!-- Authentication Configuration -->
+    <add key="AuthenticationType" value="Secure" />
+    <add key="EnableSSL" value="true" />
+    <add key="ProtocolVersion" value="3" />
+    
+    <!-- User and Group Configuration -->
+    <add key="UserSearchBase" value="OU=Users,DC=<%= @domain.split('.').join(',DC=') %>" />
+    <add key="GroupSearchBase" value="OU=Groups,DC=<%= @domain.split('.').join(',DC=') %>" />
+    <add key="UserObjectClass" value="user" />
+    <add key="GroupObjectClass" value="group" />
+    
+    <!-- Admin Group Configuration -->
+    <add key="AdminGroup" value="<%= @admin_group %>" />
+    <add key="AdminGroupDN" value="CN=<%= @admin_group %>,OU=Groups,DC=<%= @domain.split('.').join(',DC=') %>" />
+    
+    <!-- Attribute Mappings -->
+    <add key="UserIdAttribute" value="sAMAccountName" />
+    <add key="UserNameAttribute" value="displayName" />
+    <add key="UserEmailAttribute" value="mail" />
+    <add key="GroupNameAttribute" value="cn" />
+    <add key="GroupMemberAttribute" value="member" />
+    
+    <!-- Connection Settings -->
+    <add key="ConnectionTimeout" value="30" />
+    <add key="SearchTimeout" value="30" />
+    <add key="MaxConnectionPoolSize" value="10" />
+    
+    <!-- Security Settings -->
+    <add key="RequireSecureConnection" value="true" />
+    <add key="ValidateCertificate" value="true" />
+    <add key="CertificateValidationMode" value="ChainTrust" />
+    
+    <!-- Caching Settings -->
+    <add key="EnableCaching" value="true" />
+    <add key="CacheExpirationMinutes" value="15" />
+    <add key="MaxCacheSize" value="1000" />
+  </ldapSettings>
+  
+  <appSettings>
+    <!-- LDAP Query Filters -->
+    <add key="UserSearchFilter" value="(&amp;(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))" />
+    <add key="GroupSearchFilter" value="(objectClass=group)" />
+    <add key="AdminGroupFilter" value="(cn=<%= @admin_group %>)" />
+    
+    <!-- Role Mapping -->
+    <add key="MapGroupsToRoles" value="true" />
+    <add key="DefaultRole" value="User" />
+    <add key="AdminRole" value="Administrator" />
+    
+    <!-- Logging Configuration for LDAP -->
+    <add key="EnableLdapLogging" value="true" />
+    <add key="LdapLogLevel" value="INFO" />
+    <add key="LdapLogPath" value="C:\Logs\EBL\ldap.log" />
+  </appSettings>
+</configuration>

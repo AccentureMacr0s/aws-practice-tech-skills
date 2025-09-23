@@ -1,0 +1,142 @@
+# Certificate Expiry Check Script for EBL Server
+# This script checks certificate expiration and sends notifications
+
+param(
+    [string]$NotificationEmail = "<%= @notification_email %>",
+    [int]$ExpiryThresholdDays = <%= @expiry_threshold_days %>
+)
+
+# Import required modules
+Import-Module PKI -ErrorAction SilentlyContinue
+
+# Function to send email notification
+function Send-ExpiryNotification {
+    param(
+        [string]$Subject,
+        [string]$Body,
+        [string]$ToEmail
+    )
+    
+    try {
+        # Configure SMTP settings (adjust as needed for your environment)
+        $SMTPServer = "smtp.bank.local"
+        $SMTPPort = 587
+        $From = "ebl-server@bank.local"
+        
+        Send-MailMessage -To $ToEmail -From $From -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Port $SMTPPort
+        Write-EventLog -LogName "EBL Application" -Source "EBL.exe" -EventID 1001 -Message "Certificate expiry notification sent to $ToEmail"
+    }
+    catch {
+        Write-EventLog -LogName "EBL Application" -Source "EBL.exe" -EventID 1002 -EntryType Error -Message "Failed to send certificate expiry notification: $($_.Exception.Message)"
+    }
+}
+
+# Function to check certificate expiry
+function Check-CertificateExpiry {
+    $expiringCerts = @()
+    $expiredCerts = @()
+    
+    # Check certificates in Local Machine Personal store
+    $certs = Get-ChildItem -Path "Cert:\LocalMachine\My" | Where-Object { 
+        $_.Subject -like "*ebl*" -or 
+        $_.Subject -like "*bank*" -or
+        $_.FriendlyName -like "*EBL*"
+    }
+    
+    foreach ($cert in $certs) {
+        $daysUntilExpiry = ($cert.NotAfter - (Get-Date)).Days
+        
+        if ($daysUntilExpiry -lt 0) {
+            # Certificate has expired
+            $expiredCerts += [PSCustomObject]@{
+                Subject = $cert.Subject
+                Thumbprint = $cert.Thumbprint
+                ExpiryDate = $cert.NotAfter
+                DaysOverdue = [Math]::Abs($daysUntilExpiry)
+            }
+        }
+        elseif ($daysUntilExpiry -le $ExpiryThresholdDays) {
+            # Certificate is expiring soon
+            $expiringCerts += [PSCustomObject]@{
+                Subject = $cert.Subject
+                Thumbprint = $cert.Thumbprint
+                ExpiryDate = $cert.NotAfter
+                DaysUntilExpiry = $daysUntilExpiry
+            }
+        }
+    }
+    
+    # Process expired certificates
+    if ($expiredCerts.Count -gt 0) {
+        $subject = "CRITICAL: Expired Certificates on EBL Server - $env:COMPUTERNAME"
+        $body = "The following certificates have EXPIRED on EBL Server $env:COMPUTERNAME:`n`n"
+        
+        foreach ($cert in $expiredCerts) {
+            $body += "Subject: $($cert.Subject)`n"
+            $body += "Thumbprint: $($cert.Thumbprint)`n"
+            $body += "Expired: $($cert.ExpiryDate) ($($cert.DaysOverdue) days ago)`n`n"
+        }
+        
+        $body += "IMMEDIATE ACTION REQUIRED: Please renew these certificates immediately to avoid service disruption."
+        
+        Send-ExpiryNotification -Subject $subject -Body $body -ToEmail $NotificationEmail
+        Write-EventLog -LogName "EBL Application" -Source "EBL.exe" -EventID 2001 -EntryType Error -Message "CRITICAL: $($expiredCerts.Count) expired certificate(s) found"
+    }
+    
+    # Process expiring certificates
+    if ($expiringCerts.Count -gt 0) {
+        $subject = "WARNING: Certificates Expiring Soon on EBL Server - $env:COMPUTERNAME"
+        $body = "The following certificates will expire within $ExpiryThresholdDays days on EBL Server $env:COMPUTERNAME:`n`n"
+        
+        foreach ($cert in $expiringCerts) {
+            $body += "Subject: $($cert.Subject)`n"
+            $body += "Thumbprint: $($cert.Thumbprint)`n"
+            $body += "Expires: $($cert.ExpiryDate) (in $($cert.DaysUntilExpiry) days)`n`n"
+        }
+        
+        $body += "Please plan to renew these certificates before they expire."
+        
+        Send-ExpiryNotification -Subject $subject -Body $body -ToEmail $NotificationEmail
+        Write-EventLog -LogName "EBL Application" -Source "EBL.exe" -EventID 2002 -EntryType Warning -Message "WARNING: $($expiringCerts.Count) certificate(s) expiring within $ExpiryThresholdDays days"
+    }
+    
+    # Log successful check if no issues
+    if ($expiredCerts.Count -eq 0 -and $expiringCerts.Count -eq 0) {
+        Write-EventLog -LogName "EBL Application" -Source "EBL.exe" -EventID 1003 -Message "Certificate expiry check completed successfully - no issues found"
+    }
+    
+    return [PSCustomObject]@{
+        ExpiredCount = $expiredCerts.Count
+        ExpiringCount = $expiringCerts.Count
+        ExpiredCertificates = $expiredCerts
+        ExpiringCertificates = $expiringCerts
+    }
+}
+
+# Main execution
+try {
+    Write-Output "Starting certificate expiry check at $(Get-Date)"
+    
+    $result = Check-CertificateExpiry
+    
+    Write-Output "Certificate expiry check completed:"
+    Write-Output "- Expired certificates: $($result.ExpiredCount)"
+    Write-Output "- Expiring certificates: $($result.ExpiringCount)"
+    
+    # Exit with appropriate code
+    if ($result.ExpiredCount -gt 0) {
+        exit 2  # Critical - expired certificates
+    }
+    elseif ($result.ExpiringCount -gt 0) {
+        exit 1  # Warning - expiring certificates
+    }
+    else {
+        exit 0  # OK - no issues
+    }
+}
+catch {
+    $errorMsg = "Certificate expiry check failed: $($_.Exception.Message)"
+    Write-Error $errorMsg
+    Write-EventLog -LogName "EBL Application" -Source "EBL.exe" -EventID 3001 -EntryType Error -Message $errorMsg
+    exit 3  # Unknown error
+}

@@ -176,3 +176,30 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Chef and Test Kitchen
+.kitchen/
+.kitchen.local.yml
+Berksfile.lock
+.berkshelf/
+Policyfile.lock.json
+vendor/
+.chef/
+nodes/
+clients/
+cookbooks/*/Berksfile.lock
+cookbooks/*/.berkshelf/
+cookbooks/*/.kitchen/
+cookbooks/*/.kitchen.local.yml
+
+# Chef log files
+*.log
+
+# Chef backup files
+*.bak
+
+# Vagrant
+.vagrant/
+
+# Test Kitchen EC2 driver
+.kitchen.ec2.yml

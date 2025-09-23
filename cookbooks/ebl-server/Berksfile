@@ -1,0 +1,10 @@
+source 'https://supermarket.chef.io'
+
+metadata
+
+# Core cookbooks for Windows support
+cookbook 'windows'
+cookbook 'powershell'
+
+# AD join cookbook (assuming it exists or can be created)
+cookbook 'ad_join', '~> 1.0'

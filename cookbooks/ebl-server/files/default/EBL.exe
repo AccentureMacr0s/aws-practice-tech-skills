@@ -1,0 +1,20 @@
+# This is a placeholder file for EBL.exe
+# In a real implementation, this would be the actual EBL application executable
+
+# EBL.exe - Enterprise Banking Layer Application
+# Version: 1.0.0
+# Build Date: 2024-01-01
+# Platform: Windows x64
+
+# This executable should be obtained from your application development team
+# and placed in this directory for deployment via Chef cookbook.
+
+# The file should be a Windows PE executable with the following characteristics:
+# - .NET Framework 4.8 compatible
+# - Windows Service capable
+# - Support for Windows Authentication
+# - SSL/TLS support
+# - LDAP/Active Directory integration
+# - Certificate-based authentication
+
+echo "EBL.exe placeholder - replace with actual executable"
