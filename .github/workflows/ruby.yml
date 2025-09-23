@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - "./ruby/**" # Only trigger for changes in this directory
+      - "./ruby/**" # Only trigger smile change for conflict for changes in this directory
   pull_request:
     branches: [ "master" ]
     paths:
