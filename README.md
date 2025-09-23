@@ -184,3 +184,95 @@ Happy coding! 🚀
 | 3    | System design: “rate limiter”, “log pipeline”    |
 | 4    | Написать RCA по фиктивному инциденту             |
 | 5    | Повторить AWS basics (EC2, S3, CloudWatch, etc.) |
+
+---
+
+## Docker Kitchen Testing
+
+This repository includes comprehensive Docker-based Test Kitchen configuration for local development and CI/CD testing.
+
+### Prerequisites
+
+- Docker 20.10+
+- Ruby 3.0+
+- Bundler
+
+### Local Development Setup
+
+1. **Install Dependencies**
+   ```bash
+   bundle install
+   ```
+
+2. **List Available Kitchen Instances**
+   ```bash
+   kitchen list
+   ```
+
+3. **Run Tests for Specific Suite**
+   ```bash
+   # Test default cookbook
+   kitchen test default-ubuntu-2004
+   
+   # Test EBL server cookbook
+   kitchen test ebl-server-ubuntu-2004
+   
+   # Test EBL core functionality
+   kitchen test ebl-core-ubuntu-2004
+   ```
+
+4. **Run All Tests**
+   ```bash
+   kitchen test
+   ```
+
+### Available Test Suites
+
+- **default**: Basic functionality test with simple cookbook
+- **ebl-server**: Full EBL server cookbook testing
+- **ebl-core**: EBL core application management testing
+
+### Supported Platforms
+
+- Ubuntu 20.04 LTS
+- Ubuntu 22.04 LTS  
+- CentOS 7
+
+### CI/CD Integration
+
+The project includes GitHub Actions workflow (`.github/workflows/kitchen-docker.yml`) that:
+
+- Runs Kitchen tests on multiple platforms
+- Performs security scans with Cookstyle and RuboCop
+- Generates test reports and logs
+- Caches Docker layers for faster builds
+- Runs parallel testing to optimize CI time
+
+### Docker Kitchen Configuration
+
+The `.kitchen.yml` file in the project root configures:
+- Docker driver with privileged mode
+- Chef Zero provisioner
+- InSpec verifier for testing
+- Multiple platform support
+- Cookbook-specific test suites
+
+### Troubleshooting
+
+1. **Docker Permission Issues**
+   ```bash
+   sudo usermod -aG docker $USER
+   # Log out and back in
+   ```
+
+2. **Kitchen Instance Cleanup**
+   ```bash
+   kitchen destroy
+   ```
+
+3. **View Kitchen Logs**
+   ```bash
+   kitchen diagnose
+   ```
+
+For more detailed information about Chef cookbook testing, see the `chef/ebl-server/README.md` file.

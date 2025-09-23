@@ -1,0 +1,35 @@
+---
+# Example local Kitchen configuration
+# Copy this file to .kitchen.local.yml and customize as needed
+# This file will be ignored by git
+
+driver:
+  name: docker
+  # Uncomment and customize Docker settings as needed
+  # socket: unix:///var/run/docker.sock
+  # use_cache: true
+  # memory: 2048m
+  # cpu_shares: 512
+
+provisioner:
+  # Uncomment to use a different Chef version
+  # product_version: 18.2.7
+  # Enable Chef logging
+  # log_level: info
+  # chef_license: accept-silent
+
+# Override specific platforms or suites for local testing
+# platforms:
+#   - name: ubuntu-20.04-local
+#     driver:
+#       image: ubuntu:20.04
+#       volume:
+#         - /tmp:/host_tmp
+
+# suites:
+#   - name: local-test
+#     run_list:
+#       - recipe[test-cookbook::default]
+#     attributes:
+#       test_cookbook:
+#         message: "Local testing message"

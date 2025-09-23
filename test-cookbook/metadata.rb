@@ -1,0 +1,10 @@
+name 'test-cookbook'
+maintainer 'AWS Practice Team'
+maintainer_email 'practice@example.com'
+license 'Apache-2.0'
+description 'Simple test cookbook for Kitchen Docker testing'
+version '0.1.0'
+chef_version '>= 16.0'
+
+supports 'ubuntu'
+supports 'centos'
