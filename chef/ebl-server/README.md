@@ -110,6 +110,9 @@ Downloads and installs the EBL application, creates Windows service.
 ### configure
 Configures application settings, logging, and maintenance tasks.
 
+### EBL
+Core EBL application management, performance monitoring, and health checks.
+
 ### certificates
 Manages SSL certificates from AWS Secrets Manager.
 
@@ -205,6 +208,46 @@ Location: `C:\Program Files\EBL\scripts\firewall_management.ps1`
 
 # Add EBL firewall rules
 .\firewall_management.ps1 -Action AddRules
+```
+
+### EBL Application Control Scripts
+Location: `C:\Program Files\EBL\scripts\`
+
+#### Start EBL
+```powershell
+# Start EBL application with prerequisites check
+.\start_ebl.ps1
+
+# Force restart if already running
+.\start_ebl.ps1 -Force
+
+# Verbose startup with detailed logging
+.\start_ebl.ps1 -Verbose
+```
+
+#### Stop EBL
+```powershell
+# Graceful shutdown
+.\stop_ebl.ps1
+
+# Force immediate shutdown
+.\stop_ebl.ps1 -Force
+
+# Shutdown with custom timeout
+.\stop_ebl.ps1 -Timeout 60
+```
+
+#### Restart EBL
+```powershell
+# Simple restart
+.\restart_ebl.ps1
+
+# Restart with dependency checks
+.\restart_ebl.ps1 -CheckDependencies
+
+# Force restart with dependency validation
+.\restart_ebl.ps1 -Force -CheckDependencies -Timeout 120
+```
 ```
 
 ## Security Considerations

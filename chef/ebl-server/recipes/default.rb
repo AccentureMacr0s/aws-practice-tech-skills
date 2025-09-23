@@ -29,6 +29,7 @@ Chef::Log.info('Starting EBL server configuration')
 include_recipe 'ebl-server::prerequisites'
 include_recipe 'ebl-server::install'
 include_recipe 'ebl-server::configure'
+include_recipe 'ebl-server::EBL'
 
 # Conditionally include additional recipes
 include_recipe 'ebl-server::certificates' if node['ebl_server']['certificates']['enabled']

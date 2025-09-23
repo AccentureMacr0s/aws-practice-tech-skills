@@ -63,6 +63,18 @@ suites:
         install_dir: "C:\\Program Files\\EBL"
         service_name: "EBLService"
         
+  - name: ebl-core
+    run_list:
+      - recipe[ebl-server::EBL]
+    verifier:
+      inspec_tests:
+        - test/integration/ebl_core
+    attributes:
+      ebl_server:
+        app_name: "EBL Application"
+        install_dir: "C:\\Program Files\\EBL"
+        service_name: "EBLService"
+        
   - name: ad-integration
     run_list:
       - recipe[ebl-server::ad_join]
