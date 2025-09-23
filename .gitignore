@@ -176,3 +176,26 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Chef/Kitchen artifacts
+.kitchen/
+.kitchen.yml.local
+.kitchen.local.yml
+*/.kitchen/
+*/Berksfile.lock
+*/.berkshelf/
+*/cookbooks/
+*/Policyfile.lock.json
+*/.chef/
+*/nodes/
+*/roles/
+*/environments/
+*/data_bags/
+.delivery/
+.zero-knife.rb
+Berksfile.lock
+.berkshelf/
+vendor/
+.vagrant/
+*.log
+.kitchen.*.yml

@@ -1,0 +1,7 @@
+source 'https://supermarket.chef.io'
+
+metadata
+
+cookbook 'ad_join', '~> 1.0'
+cookbook 'windows', '~> 4.0'
+cookbook 'chef-vault', '~> 4.0'

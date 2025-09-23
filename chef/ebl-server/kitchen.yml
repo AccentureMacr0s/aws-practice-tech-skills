@@ -1,0 +1,100 @@
+---
+driver:
+  name: ec2
+  region: us-east-1
+  availability_zone: us-east-1a
+  require_chef_omnibus: true
+  subnet_id: <%= ENV['AWS_SUBNET_ID'] || 'subnet-12345678' %>
+  security_group_ids: 
+    - <%= ENV['AWS_SECURITY_GROUP_ID'] || 'sg-12345678' %>
+  instance_type: t3.medium
+  associate_public_ip: true
+  interface: dns
+  tags:
+    Name: "test-kitchen-ebl-server"
+    Environment: "testing"
+    Project: "ebl-server"
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  install_strategy: once
+  multiple_converge: 2
+  enforce_idempotency: true
+  deprecations_as_errors: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: windows-2022
+    driver:
+      image_search:
+        owner-id: "801119661308"
+        name: "Windows_Server-2022-English-Full-Base-*"
+      user_data: |
+        <powershell>
+        # Enable WinRM for remote management
+        winrm quickconfig -q
+        winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
+        winrm set winrm/config '@{MaxTimeoutms="1800000"}'
+        winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+        winrm set winrm/config/service/auth '@{Basic="true"}'
+        
+        # Create administrator user for kitchen
+        net user kitchen "<%= ENV['KITCHEN_PASSWORD'] || 'P@ssw0rd123!' %>" /add
+        net localgroup administrators kitchen /add
+        </powershell>
+    transport:
+      name: winrm
+      username: kitchen
+      password: <%= ENV['KITCHEN_PASSWORD'] || 'P@ssw0rd123!' %>
+
+suites:
+  - name: default
+    run_list:
+      - recipe[ebl-server::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      ebl_server:
+        app_name: "EBL Application"
+        install_dir: "C:\\Program Files\\EBL"
+        service_name: "EBLService"
+        
+  - name: ebl-core
+    run_list:
+      - recipe[ebl-server::EBL]
+    verifier:
+      inspec_tests:
+        - test/integration/ebl_core
+    attributes:
+      ebl_server:
+        app_name: "EBL Application"
+        install_dir: "C:\\Program Files\\EBL"
+        service_name: "EBLService"
+        
+  - name: ad-integration
+    run_list:
+      - recipe[ebl-server::ad_join]
+    verifier:
+      inspec_tests:
+        - test/integration/ad_integration
+    attributes:
+      ad_join:
+        domain: <%= ENV['AD_DOMAIN'] || 'example.local' %>
+        username: <%= ENV['AD_USERNAME'] || 'admin' %>
+        password: <%= ENV['AD_PASSWORD'] || 'password' %>
+        
+  - name: certificates
+    run_list:
+      - recipe[ebl-server::certificates]
+    verifier:
+      inspec_tests:
+        - test/integration/certificates
+    attributes:
+      ebl_server:
+        certificates:
+          ssl_cert_secret: <%= ENV['SSL_CERT_SECRET'] || 'ebl/ssl-certificate' %>
+          aws_region: <%= ENV['AWS_REGION'] || 'us-east-1' %>

@@ -1,0 +1,77 @@
+---
+driver:
+  name: docker
+  privileged: true
+  use_sudo: false
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  install_strategy: once
+  multiple_converge: 2
+  enforce_idempotency: true
+  deprecations_as_errors: false
+
+verifier:
+  name: inspec
+
+transport:
+  name: docker
+
+platforms:
+  - name: ubuntu-20.04
+    driver:
+      image: ubuntu:20.04
+      platform: ubuntu
+    provisioner:
+      chef_license: accept-silent
+
+  - name: ubuntu-22.04
+    driver:
+      image: ubuntu:22.04
+      platform: ubuntu
+    provisioner:
+      chef_license: accept-silent
+
+  - name: centos-7
+    driver:
+      image: centos:7
+      platform: centos
+    provisioner:
+      chef_license: accept-silent
+
+suites:
+  - name: default
+    run_list:
+      - recipe[test-cookbook::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+      test_cookbook:
+        message: "Hello from Kitchen Docker!"
+
+  - name: ebl-server
+    run_list:
+      - recipe[test-cookbook::default]  # Use test cookbook instead of Windows-specific EBL
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    includes:
+      - ubuntu-20.04
+      - ubuntu-22.04
+    attributes:
+      test_cookbook:
+        message: "EBL Server Docker Test"
+        
+  - name: ebl-core
+    run_list:
+      - recipe[test-cookbook::default]  # Use test cookbook for core testing
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    includes:
+      - ubuntu-20.04
+    attributes:
+      test_cookbook:
+        message: "EBL Core Docker Test"

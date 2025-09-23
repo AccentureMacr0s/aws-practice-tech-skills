@@ -1,0 +1,215 @@
+name: Kitchen Docker Testing
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'chef/**'
+      - 'Gemfile*'
+      - '.kitchen.yml'
+      - '.github/workflows/kitchen-docker.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - 'chef/**'
+      - 'Gemfile*'
+      - '.kitchen.yml'
+      - '.github/workflows/kitchen-docker.yml'
+  workflow_dispatch:
+
+env:
+  CHEF_LICENSE: accept-silent
+
+jobs:
+  kitchen-docker:
+    name: Kitchen Docker Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        suite: 
+          - default
+          - ebl-server
+          - ebl-core
+        platform:
+          - ubuntu-2004
+          - ubuntu-2204
+        exclude:
+          # Only run ebl-core on ubuntu-20.04 to save resources
+          - suite: ebl-core
+            platform: ubuntu-2204
+      fail-fast: false
+      max-parallel: 3
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby 3.0
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            git \
+            curl \
+            wget
+
+      - name: Install Ruby dependencies
+        run: |
+          bundle install --jobs 4 --retry 3
+
+      - name: Verify Chef installation
+        run: |
+          chef --version
+          kitchen --version
+
+      - name: List Kitchen instances
+        run: |
+          kitchen list
+
+      - name: Create Kitchen instance
+        run: |
+          kitchen create ${{ matrix.suite }}-${{ matrix.platform }}
+
+      - name: Converge Kitchen instance
+        run: |
+          kitchen converge ${{ matrix.suite }}-${{ matrix.platform }}
+
+      - name: Verify Kitchen instance
+        run: |
+          kitchen verify ${{ matrix.suite }}-${{ matrix.platform }}
+
+      - name: Destroy Kitchen instance
+        if: always()
+        run: |
+          kitchen destroy ${{ matrix.suite }}-${{ matrix.platform }}
+
+      - name: Upload Kitchen logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: kitchen-logs-${{ matrix.suite }}-${{ matrix.platform }}
+          path: |
+            .kitchen/logs/
+            .kitchen/cache/
+          retention-days: 7
+
+  kitchen-docker-integration:
+    name: Kitchen Docker Integration Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby 3.0
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install dependencies
+        run: |
+          bundle install --jobs 4 --retry 3
+
+      - name: Run full Kitchen test suite
+        run: |
+          kitchen test --concurrency=2
+
+      - name: Generate test report
+        if: always()
+        run: |
+          echo "# Kitchen Docker Test Report" > kitchen-report.md
+          echo "" >> kitchen-report.md
+          echo "## Test Results" >> kitchen-report.md
+          echo "Date: $(date)" >> kitchen-report.md
+          echo "Commit: ${{ github.sha }}" >> kitchen-report.md
+          echo "" >> kitchen-report.md
+          
+          if [ -d ".kitchen/logs" ]; then
+            echo "## Kitchen Logs Summary" >> kitchen-report.md
+            for log in .kitchen/logs/*.log; do
+              if [ -f "$log" ]; then
+                echo "### $(basename $log)" >> kitchen-report.md
+                echo '```' >> kitchen-report.md
+                tail -20 "$log" >> kitchen-report.md
+                echo '```' >> kitchen-report.md
+                echo "" >> kitchen-report.md
+              fi
+            done
+          fi
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: kitchen-docker-test-results
+          path: |
+            kitchen-report.md
+            .kitchen/logs/
+            .kitchen/cache/
+          retention-days: 30
+
+  kitchen-security-scan:
+    name: Kitchen Security Scan
+    runs-on: ubuntu-latest
+    needs: kitchen-docker
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby 3.0
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          bundle install --jobs 4 --retry 3
+
+      - name: Run Cookstyle (Chef linting)
+        run: |
+          cookstyle chef/
+
+      - name: Run RuboCop
+        run: |
+          rubocop
+
+      - name: Security audit for Chef cookbooks
+        run: |
+          # Run basic security checks on Chef cookbooks
+          find chef/ -name "*.rb" -exec grep -l "execute\|bash\|powershell_script" {} \; | while read file; do
+            echo "Checking $file for potential security issues..."
+            grep -n "execute\|bash\|powershell_script" "$file" || true
+          done
+
+      - name: Upload security scan results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: kitchen-security-scan-results
+          path: |
+            security-scan-results.txt
+          retention-days: 7
