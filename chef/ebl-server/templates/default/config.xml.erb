@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <appSettings>
+    <add key="ApplicationName" value="<%= @app_name %>" />
+    <add key="DataDirectory" value="<%= @data_dir %>" />
+    <add key="LogDirectory" value="<%= @log_dir %>" />
+    <add key="ServiceUser" value="<%= @service_user %>" />
+    
+    <!-- Database Configuration -->
+    <add key="DatabaseConnectionString" value="Data Source=localhost;Initial Catalog=EBL;Integrated Security=true;" />
+    <add key="DatabaseTimeout" value="30" />
+    
+    <!-- Logging Configuration -->
+    <add key="LogLevel" value="Information" />
+    <add key="EnableFileLogging" value="true" />
+    <add key="EnableEventLogging" value="true" />
+    <add key="MaxLogFileSize" value="10485760" /> <!-- 10MB -->
+    
+    <!-- Security Configuration -->
+    <add key="EnableSSL" value="true" />
+    <add key="RequireAuthentication" value="true" />
+    <add key="SessionTimeout" value="30" />
+    
+    <!-- Performance Configuration -->
+    <add key="MaxConcurrentConnections" value="100" />
+    <add key="RequestTimeout" value="60" />
+    <add key="CacheEnabled" value="true" />
+    <add key="CacheExpirationMinutes" value="60" />
+  </appSettings>
+  
+  <system.serviceModel>
+    <services>
+      <service name="EBL.Services.EBLService">
+        <endpoint address="" binding="wsHttpBinding" contract="EBL.Contracts.IEBLService" />
+        <endpoint address="mex" binding="mexHttpBinding" contract="IMetadataExchange" />
+      </service>
+    </services>
+    
+    <behaviors>
+      <serviceBehaviors>
+        <behavior>
+          <serviceMetadata httpGetEnabled="true" />
+          <serviceDebug includeExceptionDetailInFaults="false" />
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+  </system.serviceModel>
+  
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.8" />
+  </startup>
+</configuration>

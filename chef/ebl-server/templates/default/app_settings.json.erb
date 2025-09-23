@@ -1,0 +1,70 @@
+{
+  "ApplicationSettings": {
+    "Name": "<%= @app_name %>",
+    "Version": "<%= @version %>",
+    "DataDirectory": "<%= @data_dir %>",
+    "LogDirectory": "<%= @log_dir %>",
+    "Environment": "Production"
+  },
+  "DatabaseSettings": {
+    "ConnectionString": "Data Source=localhost;Initial Catalog=EBL;Integrated Security=true;",
+    "CommandTimeout": 30,
+    "ConnectionPoolSize": 10,
+    "EnableRetry": true,
+    "MaxRetryAttempts": 3
+  },
+  "LoggingSettings": {
+    "LogLevel": "Information",
+    "EnableFileLogging": true,
+    "EnableEventLogging": true,
+    "EnableConsoleLogging": false,
+    "MaxLogFileSize": 10485760,
+    "MaxLogFiles": 10,
+    "LogFormat": "JSON"
+  },
+  "SecuritySettings": {
+    "EnableSSL": true,
+    "RequireAuthentication": true,
+    "SessionTimeout": 30,
+    "EnableAuditLogging": true,
+    "PasswordPolicy": {
+      "MinLength": 8,
+      "RequireUppercase": true,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSpecialCharacters": true
+    }
+  },
+  "PerformanceSettings": {
+    "MaxConcurrentConnections": 100,
+    "RequestTimeout": 60,
+    "EnableCaching": true,
+    "CacheExpirationMinutes": 60,
+    "EnableCompression": true,
+    "MaxRequestSize": 4194304
+  },
+  "MonitoringSettings": {
+    "EnableHealthChecks": true,
+    "HealthCheckInterval": 300,
+    "EnablePerformanceCounters": true,
+    "AlertThresholds": {
+      "CPUUsage": 80,
+      "MemoryUsage": 85,
+      "DiskUsage": 90,
+      "ResponseTime": 5000
+    }
+  },
+  "IntegrationSettings": {
+    "ActiveDirectory": {
+      "Enabled": false,
+      "Domain": "",
+      "LDAPServer": "",
+      "BaseDN": ""
+    },
+    "WebServices": {
+      "EnableWCF": true,
+      "EnableRESTAPI": true,
+      "MaxMessageSize": 65536
+    }
+  }
+}

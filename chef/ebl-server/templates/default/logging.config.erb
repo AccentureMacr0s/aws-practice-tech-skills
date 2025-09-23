@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="nlog" type="NLog.Config.ConfigSectionHandler, NLog"/>
+  </configSections>
+  
+  <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        autoReload="true"
+        internalLogLevel="Info"
+        internalLogFile="<%= @log_dir %>\internal-nlog.txt">
+
+    <!-- Define targets -->
+    <targets>
+      <!-- File target -->
+      <target xsi:type="File"
+              name="fileTarget"
+              fileName="<%= @log_dir %>\<%= @app_name %>-${shortdate}.log"
+              layout="${longdate} ${level:uppercase=true} ${logger} ${message} ${exception:format=tostring}"
+              archiveFileName="<%= @log_dir %>\archives\<%= @app_name %>-{#}.log"
+              archiveNumbering="DateAndSequence"
+              archiveEvery="Day"
+              maxArchiveFiles="30"
+              archiveDateFormat="yyyy-MM-dd"
+              keepFileOpen="false" />
+
+      <!-- Windows Event Log target -->
+      <target xsi:type="EventLog"
+              name="eventLogTarget"
+              source="<%= @app_name %>"
+              log="Application"
+              layout="${longdate} ${level:uppercase=true} ${logger} ${message} ${exception:format=tostring}" />
+
+      <!-- Console target -->
+      <target xsi:type="Console"
+              name="consoleTarget"
+              layout="${time} [${level}] ${message} ${exception:format=tostring}" />
+
+      <!-- Database target (optional) -->
+      <target xsi:type="Database"
+              name="databaseTarget"
+              connectionString="Data Source=localhost;Initial Catalog=EBL;Integrated Security=true;">
+        <commandText>
+          INSERT INTO Logs (Timestamp, Level, Logger, Message, Exception)
+          VALUES (@timestamp, @level, @logger, @message, @exception)
+        </commandText>
+        <parameter name="@timestamp" layout="${date}" />
+        <parameter name="@level" layout="${level}" />
+        <parameter name="@logger" layout="${logger}" />
+        <parameter name="@message" layout="${message}" />
+        <parameter name="@exception" layout="${exception:tostring}" />
+      </target>
+    </targets>
+
+    <!-- Define rules -->
+    <rules>
+      <!-- All logs go to file -->
+      <logger name="*" minlevel="Trace" writeTo="fileTarget" />
+      
+      <!-- Important logs go to Windows Event Log -->
+      <logger name="*" minlevel="Warn" writeTo="eventLogTarget" />
+      
+      <!-- Debug logs to console (in debug mode) -->
+      <logger name="*" minlevel="Debug" writeTo="consoleTarget" />
+      
+      <!-- Critical logs to database -->
+      <logger name="*" minlevel="Error" writeTo="databaseTarget" />
+    </rules>
+  </nlog>
+</configuration>
