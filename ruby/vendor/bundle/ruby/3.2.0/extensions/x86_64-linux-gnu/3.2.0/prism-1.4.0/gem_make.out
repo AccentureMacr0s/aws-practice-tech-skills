@@ -6,10 +6,10 @@ checking for whether -fvisibility=hidden is accepted as CFLAGS... yes
 creating Makefile
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/prism-1.4.0/ext/prism
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-j5m7hq sitelibdir\=./.gem.20251114-3449-j5m7hq clean
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-pxxmme sitelibdir\=./.gem.20251114-3829-pxxmme clean
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/prism-1.4.0/ext/prism
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-j5m7hq sitelibdir\=./.gem.20251114-3449-j5m7hq
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-pxxmme sitelibdir\=./.gem.20251114-3829-pxxmme
 compiling api_node.c
 compiling api_pack.c
 compiling ./../../src/diagnostic.c
@@ -37,8 +37,8 @@ compiling ./../../src/token_type.c
 linking shared-object prism/prism.so
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/prism-1.4.0/ext/prism
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-j5m7hq sitelibdir\=./.gem.20251114-3449-j5m7hq install
-/usr/bin/install -c -m 0755 prism.so ./.gem.20251114-3449-j5m7hq/prism
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-pxxmme sitelibdir\=./.gem.20251114-3829-pxxmme install
+/usr/bin/install -c -m 0755 prism.so ./.gem.20251114-3829-pxxmme/prism
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/prism-1.4.0/ext/prism
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-j5m7hq sitelibdir\=./.gem.20251114-3449-j5m7hq clean
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-pxxmme sitelibdir\=./.gem.20251114-3829-pxxmme clean

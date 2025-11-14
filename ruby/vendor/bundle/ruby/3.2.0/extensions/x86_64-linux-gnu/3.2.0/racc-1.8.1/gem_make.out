@@ -3,16 +3,16 @@ current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-
 creating Makefile
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/racc-1.8.1/ext/racc/cparse
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-wknyag sitelibdir\=./.gem.20251114-3449-wknyag clean
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-k47t1j sitelibdir\=./.gem.20251114-3829-k47t1j clean
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/racc-1.8.1/ext/racc/cparse
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-wknyag sitelibdir\=./.gem.20251114-3449-wknyag
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-k47t1j sitelibdir\=./.gem.20251114-3829-k47t1j
 compiling cparse.c
 linking shared-object racc/cparse.so
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/racc-1.8.1/ext/racc/cparse
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-wknyag sitelibdir\=./.gem.20251114-3449-wknyag install
-/usr/bin/install -c -m 0755 cparse.so ./.gem.20251114-3449-wknyag/racc
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-k47t1j sitelibdir\=./.gem.20251114-3829-k47t1j install
+/usr/bin/install -c -m 0755 cparse.so ./.gem.20251114-3829-k47t1j/racc
 
 current directory: /home/runner/work/aws-practice-tech-skills/aws-practice-tech-skills/ruby/vendor/bundle/ruby/3.2.0/gems/racc-1.8.1/ext/racc/cparse
-make DESTDIR\= sitearchdir\=./.gem.20251114-3449-wknyag sitelibdir\=./.gem.20251114-3449-wknyag clean
+make DESTDIR\= sitearchdir\=./.gem.20251114-3829-k47t1j sitelibdir\=./.gem.20251114-3829-k47t1j clean
