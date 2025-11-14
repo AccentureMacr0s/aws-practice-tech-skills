@@ -19,6 +19,11 @@ Welcome to the **AWS Practice Tech Skills** repository! This repository is desig
 - Logic: Conditional statements and loops.  
 - Expressions: Filtering and advanced logic.  
 
+### Best Practices:
+- **[Bundler Best Practices](ruby/BUNDLER_BEST_PRACTICES.md)** - Guidelines for secure dependency management
+- Always configure Bundler to use local paths: `bundle config set --local path 'vendor/bundle'`
+- Never run Bundler as root to avoid security risks and permission issues
+
 ### Example Task:  
 Write a Ruby script that reads a list of numbers from input, filters out even numbers, and prints the sum of the remaining odd numbers.  
 
