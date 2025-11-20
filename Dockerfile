@@ -2,6 +2,7 @@ FROM ubuntu:24.04
 
 # Set environment variable to prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
+FROM ruby:3.2-slim
 
 # Установка базовых зависимостей и инструментов разработки
 RUN apt-get update && apt-get install -y \
