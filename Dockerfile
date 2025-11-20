@@ -20,8 +20,6 @@ RUN apt-get update && apt-get install -y \
     ruby-dev \
     && rm -rf /var/lib/apt/lists/* \
     && ruby --version
-# Bundler уже установлен в образе ruby
-# Bundler уже установлен в образе ruby
 
 # Установка рабочего каталога
 WORKDIR /app
